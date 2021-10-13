@@ -13,8 +13,6 @@ public class MatricolaCognome {
                         state = 2;
                     else if (Character.isDigit(ch) && ch % 2 == 1)
                         state = 1;
-                    else if (Character.isLetter(ch))
-                        state = 5;
                     else
                         state = -1;
                     break;
@@ -24,11 +22,7 @@ public class MatricolaCognome {
                         state = 2;
                     else if (Character.isDigit(ch) && ch % 2 == 1)
                         state = 1;
-                    else if (Character.isLetter(ch) && Character.toLowerCase(ch) >= 'a'
-                            && Character.toLowerCase(ch) <= 'k')
-                        state = 5;
-                    else if (Character.isLetter(ch) && Character.toLowerCase(ch) >= 'l'
-                            && Character.toLowerCase(ch) <= 'z')
+                    else if (Character.isLetter(ch) && ch >= 'L' && ch <= 'Z')
                         state = 3;
                     else
                         state = -1;
@@ -39,12 +33,8 @@ public class MatricolaCognome {
                         state = 2;
                     else if (Character.isDigit(ch) && ch % 2 == 1)
                         state = 1;
-                    else if (Character.isLetter(ch) && Character.toLowerCase(ch) >= 'a'
-                            && Character.toLowerCase(ch) <= 'k')
+                    else if (Character.isLetter(ch) && ch >= 'A' && ch <= 'K')
                         state = 3;
-                    else if (Character.isLetter(ch) && Character.toLowerCase(ch) >= 'l'
-                            && Character.toLowerCase(ch) <= 'z')
-                        state = 5;
                     else
                         state = -1;
                     break;
@@ -52,17 +42,9 @@ public class MatricolaCognome {
                 case 3:
                     if (Character.isLetter(ch))
                         state = 3;
-                    else if (Character.isDigit(ch))
-                        state = 5;
                     else
                         state = -1;
                     break;
-
-                case 5:
-                    if (Character.isLetter(ch) || Character.isDigit(ch))
-                        state = 5;
-                    else
-                        state = -1;
 
             }
         }
