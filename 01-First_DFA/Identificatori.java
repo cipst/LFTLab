@@ -10,7 +10,7 @@ public class Identificatori {
             switch (state) {
                 case 0:
                     if (ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z')
-                        state = 1;
+                        state = 2;
                     else if (ch == '_')
                         state = 1;
                     else if (ch >= '0' && ch <= '9')
