@@ -1,1 +1,5 @@
-! > >= < <= <> == && || ( ) / + * - { } ; , assign 5
+! > >= < <= <> == && || ( ) / + * - { } ; , 
+assign 5 to pippo;
+while pippo <> pluto{
+    assign 10 to pluto;
+}

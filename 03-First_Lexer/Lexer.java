@@ -5,7 +5,6 @@ public class Lexer {
 
     public static int line = 1;
     private char peek = ' ';
-    private String word = "";
 
     private void readch(BufferedReader br) {
         try {
@@ -16,6 +15,8 @@ public class Lexer {
     }
 
     public Token lexical_scan(BufferedReader br) {
+        String s = "";
+
         while (peek == ' ' || peek == '\t' || peek == '\n' || peek == '\r') {
             if (peek == '\n')
                 line++;
@@ -131,8 +132,10 @@ public class Lexer {
 
         default:
             if (Character.isLetter(peek)) {
+                // ... gestire il caso degli identificatori e delle parole chiave //
 
-                if (peek == 'a') {
+                switch (peek) {
+                case 'a':
                     readch(br);
                     if (peek == 's') {
                         readch(br);
@@ -145,42 +148,61 @@ public class Lexer {
                                     if (peek == 'n') {
                                         peek = ' ';
                                         return Word.assign;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else if (peek == 't') {
+                                    } else
+                                        return mkIdentifier("assig", br);
+                                } else
+                                    return mkIdentifier("assi", br);
+                            } else
+                                return mkIdentifier("ass", br);
+                        } else
+                            return mkIdentifier("as", br);
+                    } else
+                        return mkIdentifier("a", br);
+
+                case 't': // to
                     readch(br);
                     if (peek == 'o') {
                         peek = ' ';
                         return Word.to;
-                    }
-                } else if (peek == 'i') {
+                    } else
+                        return mkIdentifier("t", br);
+
+                case 'i': // if
                     readch(br);
                     if (peek == 'f') {
                         peek = ' ';
                         return Word.iftok;
-                    }
-                } else if (peek == 'e') {
+                    } else
+                        return mkIdentifier("i", br);
+
+                case 'e': // else || end
                     readch(br);
-                    if (peek == 'l') {
+                    switch (peek) {
+                    case 'l': // else
                         readch(br);
                         if (peek == 's') {
                             readch(br);
                             if (peek == 'e') {
                                 peek = ' ';
                                 return Word.elsetok;
-                            }
-                        }
-                    } else if (peek == 'n') {
+                            } else
+                                return mkIdentifier("els", br);
+                        } else
+                            return mkIdentifier("el", br);
+
+                    case 'n': // end
                         readch(br);
                         if (peek == 'd') {
                             peek = ' ';
                             return Word.end;
-                        }
+                        } else
+                            return mkIdentifier("en", br);
+
+                    default:
+                        return mkIdentifier("e", br);
                     }
-                } else if (peek == 'w') {
+
+                case 'w': // while
                     readch(br);
                     if (peek == 'h') {
                         readch(br);
@@ -192,10 +214,14 @@ public class Lexer {
                                     peek = ' ';
                                     return Word.whiletok;
                                 }
-                            }
-                        }
-                    }
-                } else if (peek == 'b') {
+                            } else
+                                return mkIdentifier("whil", br);
+                        } else
+                            return mkIdentifier("wh", br);
+                    } else
+                        return mkIdentifier("w", br);
+
+                case 'b': // begin
                     readch(br);
                     if (peek == 'e') {
                         readch(br);
@@ -206,11 +232,16 @@ public class Lexer {
                                 if (peek == 'n') {
                                     peek = ' ';
                                     return Word.begin;
-                                }
-                            }
-                        }
-                    }
-                } else if (peek == 'p') {
+                                } else
+                                    return mkIdentifier("begi", br);
+                            } else
+                                return mkIdentifier("beg", br);
+                        } else
+                            return mkIdentifier("be", br);
+                    } else
+                        return mkIdentifier("b", br);
+
+                case 'p': // print
                     readch(br);
                     if (peek == 'r') {
                         readch(br);
@@ -221,11 +252,16 @@ public class Lexer {
                                 if (peek == 't') {
                                     peek = ' ';
                                     return Word.print;
-                                }
-                            }
-                        }
-                    }
-                } else if (peek == 'r') {
+                                } else
+                                    return mkIdentifier("prin", br);
+                            } else
+                                return mkIdentifier("pri", br);
+                        } else
+                            return mkIdentifier("pr", br);
+                    } else
+                        return mkIdentifier("p", br);
+
+                case 'r': // read
                     readch(br);
                     if (peek == 'e') {
                         readch(br);
@@ -234,25 +270,47 @@ public class Lexer {
                             if (peek == 'd') {
                                 peek = ' ';
                                 return Word.read;
-                            }
-                        }
-                    }
-                }
+                            } else
+                                return mkIdentifier("rea", br);
+                        } else
+                            return mkIdentifier("re", br);
+                    } else
+                        return mkIdentifier("r", br);
 
-                // ... gestire il caso degli identificatori e delle parole chiave //
-                return null;
+                    /* Sono un identificatore */
+                default:
+                    return mkIdentifier("", br);
+                }
 
             } else if (Character.isDigit(peek)) {
 
                 // ... gestire il caso dei numeri ... //
-
-                return new NumberTok((int) peek);
+                if (peek == '0') {
+                    peek = ' ';
+                    s = "0";
+                } else {
+                    if ('1' <= peek && peek <= '9') {
+                        while ('0' <= peek && peek <= '9') {
+                            s += peek;
+                            readch(br);
+                        }
+                    }
+                }
+                return new NumberTok(Integer.parseInt(s));
 
             } else {
                 System.err.println("Erroneous character: " + peek);
                 return null;
             }
         }
+    }
+
+    public Token mkIdentifier(String t, BufferedReader br) {
+        do {
+            t += peek;
+            readch(br);
+        } while (('a' <= peek && peek <= 'z') || ('A' <= peek && peek <= 'Z') || ('0' <= peek && peek <= '9'));
+        return new Word(Tag.ID, t);
     }
 
     public static void main(String[] args) {
