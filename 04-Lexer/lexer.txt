@@ -1,0 +1,16 @@
+assign 5 to a;
+assign 10 to b;
+assign 2 to _pippo;
+if(____a_ > 2){
+    assign 99 to __aaa0230_;
+}
+
+assign 300 to d; //Questo è un commento
+
+readable 33,
+
+assign 10 to t; //Questo è un altro commento
+
+/* AIUTOO */
+
+print(* d t)

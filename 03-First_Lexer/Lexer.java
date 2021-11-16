@@ -98,7 +98,7 @@ public class Lexer {
                 peek = ' ';
                 return Word.eq;
             } else {
-                System.err.println("Erroneous character" + " after & : " + peek);
+                System.err.println("Erroneous character" + " after = : " + peek);
                 return null;
             }
 

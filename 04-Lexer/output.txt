@@ -1,0 +1,29 @@
+Scan: <259, assign>
+Scan: <256, 5>
+Scan: <260, to>
+Scan: <257, a;>
+Scan: <259, assign>
+Scan: <256, 10>
+Scan: <260, to>
+Scan: <257, b;>
+Scan: <259, assign>
+Scan: <256, 2>
+Scan: <260, to>
+Scan: <257, _pippo>
+Scan: <59>
+Scan: <261, if>
+Scan: <40>
+Scan: <257, ____a_>
+Scan: <258, >>
+Scan: <256, 2>
+Scan: <41>
+Scan: <123>
+Scan: <259, assign>
+Scan: <256, 99>
+Scan: <260, to>
+Scan: <257, __aaa0230_>
+Scan: <59>
+Scan: <125>
+Scan: <256, 0>
+Scan: <257, a0as>
+Scan: <257, ciao>
