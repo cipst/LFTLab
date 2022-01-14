@@ -1,3 +1,0 @@
-assign +(5,2) to x;
-assign *(2,3,4) to y;
-assign +(5,-7 2) to k

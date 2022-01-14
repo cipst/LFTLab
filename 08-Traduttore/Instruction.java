@@ -25,6 +25,8 @@ public class Instruction {
             case idiv : temp = " idiv " + "\n"; break;
             case isub : temp = " isub " + "\n"; break;
             case ineg : temp = " ineg " + "\n"; break;
+            case dup : temp = " dup " + "\n"; break;
+            case pop : temp = " pop " + "\n"; break;
             case istore : temp = " istore " + operand + "\n"; break;
             case ior : temp = " ior " + "\n"; break;
             case iand : temp = " iand " + "\n"; break;

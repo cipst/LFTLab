@@ -90,6 +90,7 @@ public class Translator {
 
             case '}':
             case Tag.EOF:
+                code.emit(OpCode.GOto, slNext);
                 break;
 
             default:
@@ -110,7 +111,8 @@ public class Translator {
                 else
                     error("Error in stat() method. Expected " + ANSI_BOLD + "'to'" + ANSI_RESET_ERROR
                             + " after expression!");
-                idlist();
+                idlist(Tag.ASSIGN);
+                code.emit(OpCode.pop);
                 break;
 
             // print (Exprlist())
@@ -121,8 +123,8 @@ public class Translator {
                 else
                     error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
                             + " after print command!");
-                code.emit(OpCode.invokestatic, 1);
-                exprlist();
+                // code.emit(OpCode.invokestatic, 1);
+                exprlist(OpCode.invokestatic);
                 if (look.tag == ')')
                     match(')');
                 else
@@ -137,8 +139,8 @@ public class Translator {
                 else
                     error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
                             + " after read command!");
-                code.emit(OpCode.invokestatic, 0);
-                idlist(/* DA COMPLETARE */);
+                // code.emit(OpCode.invokestatic, 0);
+                idlist(Tag.READ);
                 if (look.tag == ')')
                     match(')');
                 else
@@ -155,17 +157,21 @@ public class Translator {
                     error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
                             + " after while command!");
                 int begin = code.newLabel();
-                code.emitLabel(begin);
                 int wTrue = code.newLabel();
-                // int bFalse = sNext;
-                bexpr(wTrue, sNext);
+                int wFalse = code.newLabel();
+                code.emitLabel(begin);
+
+                bexpr(wTrue, wFalse);
                 if (look.tag == ')')
                     match(')');
                 else
                     error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
                             + " after boolean expression!");
+
                 code.emitLabel(wTrue);
                 stat(begin);
+                code.emitLabel(wFalse);
+
                 break;
 
             // if(Bexpr())Stat()StatP()
@@ -177,17 +183,20 @@ public class Translator {
                     error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
                             + " after if command!");
                 int iTrue = code.newLabel();
-                // bFalse = sNext;
-                bexpr(iTrue, sNext);
+                int iFalse = code.newLabel();
+                int iEnd = code.newLabel();
+                bexpr(iTrue, iFalse);
                 if (look.tag == ')')
                     match(')');
                 else
                     error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
                             + " after boolean expression!");
                 code.emitLabel(iTrue);
-                stat(sNext);
-                code.emit(OpCode.GOto, sNext);
-                statp(sNext, sNext);
+                stat(iEnd);
+                code.emit(OpCode.GOto, iEnd);
+                code.emitLabel(iFalse);
+                statp(iEnd);
+                code.emitLabel(iEnd);
                 break;
 
             // {Statlist()}
@@ -201,6 +210,11 @@ public class Translator {
                             + " after a list of statements!");
                 break;
 
+            case ';':
+            case '}':
+            case Tag.EOF:
+                break;
+
             default:
                 error("Error in stat() method. Expected " + ANSI_BOLD + "assign" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
                         + "print" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "read" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
@@ -210,17 +224,17 @@ public class Translator {
         }
     }
 
-    public void statp(int sNext, int lFalse) {
+    public void statp(int sNext) {
         switch (look.tag) {
 
             // else Stat() end
             case Tag.ELSE:
                 match(Tag.ELSE);
-                code.emitLabel(lFalse);
                 stat(sNext);
-                if (look.tag == Tag.END)
+                if (look.tag == Tag.END) {
+                    code.emit(OpCode.GOto, sNext);
                     match(Tag.END);
-                else
+                } else
                     error("Error in statp() method. Expected " + ANSI_BOLD + "end" + ANSI_RESET_ERROR
                             + " after a statement!");
                 break;
@@ -232,7 +246,7 @@ public class Translator {
         }
     }
 
-    private void idlist() {
+    private void idlist(int from) {
         if (look.tag == Tag.ID) {
             int id_addr = st.lookupAddress(((Word) look).lexeme);
             if (id_addr == -1) {
@@ -240,28 +254,27 @@ public class Translator {
                 st.insert(((Word) look).lexeme, count++);
             }
             match(Tag.ID);
-            code.emit(OpCode.istore, id_addr);
-            idlistP();
+
+            if (from == Tag.READ) {
+                code.emit(OpCode.invokestatic, 0);
+                code.emit(OpCode.istore, id_addr);
+            }
+            if (from == Tag.ASSIGN) {
+                code.emit(OpCode.dup);
+                code.emit(OpCode.istore, id_addr);
+            }
+
+            idlistP(from);
         } else {
             error("Error in idlist() method. Expected " + ANSI_BOLD + "ID" + ANSI_RESET_ERROR + "!");
         }
     }
 
-    private void idlistP() {
+    private void idlistP(int from) {
         switch (look.tag) {
             case ',':
                 match(',');
-                if (look.tag == Tag.ID) {
-                    int id_addr = st.lookupAddress(((Word) look).lexeme);
-                    if (id_addr == -1) {
-                        id_addr = count;
-                        st.insert(((Word) look).lexeme, count++);
-                    }
-                    match(Tag.ID);
-                    code.emit(OpCode.istore, id_addr);
-                } else
-                    error("Error in idlistP() method. Expected " + ANSI_BOLD + "ID" + ANSI_RESET_ERROR + " after ','!");
-                idlistP();
+                idlist(from);
                 break;
 
             case ')':
@@ -278,15 +291,43 @@ public class Translator {
 
     private void bexpr(int ltrue, int lfalse) {
         if (look.tag == Tag.RELOP) {
+            String rel = ((Word) look).lexeme;
             match(Tag.RELOP);
+
             expr();
             expr();
+            switch (rel) {
+                case "<":
+                    code.emit(OpCode.if_icmplt, ltrue);
+                    break;
+
+                case ">":
+                    code.emit(OpCode.if_icmpgt, ltrue);
+                    break;
+
+                case "<=":
+                    code.emit(OpCode.if_icmple, ltrue);
+                    break;
+
+                case ">=":
+                    code.emit(OpCode.if_icmpge, ltrue);
+                    break;
+
+                case "==":
+                    code.emit(OpCode.if_icmpeq, ltrue);
+                    break;
+
+                case "<>":
+                    code.emit(OpCode.if_icmpne, ltrue);
+                    break;
+            }
+            code.emit(OpCode.GOto, lfalse);
         } else {
             error("Error in bexpr() method. Expected {" + ANSI_BOLD + "<, >, <=, >=, ==, <>" + ANSI_RESET_ERROR + "}!");
         }
     }
 
-    private void expr( /* completare */ ) {
+    private void expr() {
         switch (look.tag) {
             case '+':
                 match('+');
@@ -294,13 +335,12 @@ public class Translator {
                     match('(');
                 else
                     error("Error in expr() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR + " after '+'!");
-                exprlist();
+                exprlist(OpCode.iadd);
                 if (look.tag == ')')
                     match(')');
                 else
                     error("Error in expr() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
                             + " after list expression!");
-                code.emit(OpCode.iadd);
                 break;
 
             case '*':
@@ -309,13 +349,12 @@ public class Translator {
                     match('(');
                 else
                     error("Error in expr() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR + " after '*'!");
-                exprlist();
+                exprlist(OpCode.imul);
                 if (look.tag == ')')
                     match(')');
                 else
                     error("Error in expr() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
                             + " after list expression!");
-                code.emit(OpCode.imul);
                 break;
 
             case '-':
@@ -343,8 +382,8 @@ public class Translator {
                 break;
 
             case Tag.ID:
-                match(Tag.ID);
                 code.emit(OpCode.iload, st.lookupAddress(((Word) look).lexeme));
+                match(Tag.ID);
                 break;
 
             default:
@@ -355,11 +394,14 @@ public class Translator {
         }
     }
 
-    private void exprlist() {
+    private void exprlist(OpCode opcode) {
         if (look.tag == '+' || look.tag == '*' || look.tag == '-' || look.tag == '/' || look.tag == Tag.NUM
                 || look.tag == Tag.ID) {
             expr();
-            exprlistP();
+            if (opcode == OpCode.invokestatic) {
+                code.emit(OpCode.invokestatic, 1);
+            }
+            exprlistP(opcode);
         } else {
             error("Error in exprlist() method. Expected " + ANSI_BOLD + "+" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "-"
                     + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "*" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "/"
@@ -367,12 +409,18 @@ public class Translator {
         }
     }
 
-    private void exprlistP() {
+    private void exprlistP(OpCode opcode) {
         switch (look.tag) {
             case ',':
                 match(',');
                 expr();
-                exprlistP();
+                if (opcode == OpCode.invokestatic) {
+                    code.emit(OpCode.invokestatic, 1);
+                } else {
+
+                    code.emit(opcode);
+                }
+                exprlistP(opcode);
                 break;
 
             case ')':
@@ -386,7 +434,7 @@ public class Translator {
 
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "TranslatorTest.txt";
+        String path = "TEST.lft";
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Translator translator = new Translator(lex, br);
