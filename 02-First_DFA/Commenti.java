@@ -52,8 +52,17 @@ public class Commenti {
     }
 
     public static void main(String[] args) {
+
+        for (int i = 0; i < args.length; ++i) {
+            System.out.println(args[i] + ": " + (scan(args[i]) ? "OK" : "NOPE"));
+        }
+        System.out.println("--------------------");
+
         System.out.print("CASE \"/**/a\": ");
         System.out.println(scan("/**/a") ? "OK" : "NOPE");
+        
+        System.out.print("CASE \"/*/\": ");
+        System.out.println(scan("/*/") ? "OK" : "NOPE");
         
         System.out.print("CASE \"/**/\": ");
         System.out.println(scan("/**/") ? "OK" : "NOPE");

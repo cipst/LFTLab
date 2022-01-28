@@ -13,8 +13,6 @@ public class Identificatori {
                         state = 2;
                     else if (ch == '_')
                         state = 1;
-                    else if (ch >= '0' && ch <= '9')
-                        state = 3;
                     else
                         state = -1;
                     break;
@@ -37,17 +35,6 @@ public class Identificatori {
                         state = 2;
                     else if (ch >= '0' && ch <= '9')
                         state = 2;
-                    else
-                        state = -1;
-                    break;
-
-                case 3:
-                    if (ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z')
-                        state = 3;
-                    else if (ch == '_')
-                        state = 3;
-                    else if (ch >= '0' && ch <= '9')
-                        state = 3;
                     else
                         state = -1;
                     break;

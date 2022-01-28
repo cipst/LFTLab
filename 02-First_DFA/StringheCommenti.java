@@ -54,6 +54,12 @@ public class StringheCommenti {
     }
 
     public static void main(String[] args) {
+        
+        for (int i = 0; i < args.length; ++i) {
+            System.out.println(args[i] + ": " + (scan(args[i]) ? "OK" : "NOPE"));
+        }
+        System.out.println("--------------------");
+        
         System.out.print("CASE \"/**/a\": ");
         System.out.println(scan("/**/a") ? "OK" : "NOPE");
 
