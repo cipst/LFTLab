@@ -6,12 +6,12 @@ public class Parser {
     private Token look;
 
     /* FORMATTAZIONE OUTPUT SU PROMPT */
-    public static String ANSI_BOLD = "\u001b[1m";
-    public static String ANSI_RED = "\u001B[31m";
-    public static String ANSI_GREEN = "\u001b[32m";
-    public static String ANSI_CYAN = "\u001b[36m";
-    public static String ANSI_RESET_ERROR = "\u001B[0m" + ANSI_RED;
-    public static String ANSI_RESET = "\u001B[0m";
+    public static String ANSI_BOLD = " \u001b[1m ";
+    public static String ANSI_RED = " \u001B[31m ";
+    public static String ANSI_GREEN = " \u001b[32m ";
+    public static String ANSI_CYAN = " \u001b[36m ";
+    public static String ANSI_RESET_ERROR = " \u001B[0m " + ANSI_RED;
+    public static String ANSI_RESET = " \u001B[0m ";
 
     public Parser(Lexer l, BufferedReader br) {
         lex = l;
@@ -58,29 +58,30 @@ public class Parser {
     private void exprp() {
         switch (look.tag) {
 
-        // mi aspetto uno tra '+', '-' => per continuare la ricorsione
-        case '+':
-            // GUIDA(E' -> +TE')
-            match('+');
-            term();
-            exprp();
-            break;
+            // mi aspetto uno tra '+', '-' => per continuare la ricorsione
+            case '+':
+                // GUIDA(E' -> +TE')
+                match('+');
+                term();
+                exprp();
+                break;
 
-        case '-':
-            // GUIDA(E' -> -TE')
-            match('-');
-            term();
-            exprp();
-            break;
+            case '-':
+                // GUIDA(E' -> -TE')
+                match('-');
+                term();
+                exprp();
+                break;
 
-        // mi aspetto uno tra ')' e EOF => per terminare la ricorsione
-        case ')':
-        case Tag.EOF:
-            break;
+            // FOLLOW(exprp) = {')', EOF}
+            case ')':
+            case Tag.EOF:
+                break;
 
-        default:
-            error(ANSI_BOLD + "+" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "-" + ANSI_RESET_ERROR + " or " + ANSI_BOLD
-                    + ")" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR + " expected.");
+            default:
+                error(ANSI_BOLD + "+" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "-" + ANSI_RESET_ERROR + " or "
+                        + ANSI_BOLD + ")" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR
+                        + " expected.");
         }
     }
 
@@ -96,58 +97,60 @@ public class Parser {
 
     private void termp() {
         switch (look.tag) {
-        case '*':
-            // GUIDA(T' -> *FT')
-            match('*');
-            fact();
-            termp();
-            break;
+            case '*':
+                // GUIDA(T' -> *FT')
+                match('*');
+                fact();
+                termp();
+                break;
 
-        case '/':
-            // GUIDA(T' -> /FT')
-            match('/');
-            fact();
-            termp();
-            break;
+            case '/':
+                // GUIDA(T' -> /FT')
+                match('/');
+                fact();
+                termp();
+                break;
 
-        case '+':
-            break;
-        case '-':
-            break;
-        case ')':
-            break;
-        case Tag.EOF:
-            break;
+            // FOLLOW(termp) = {'+', '-', ')', EOF}
+            case '+':
+            case '-':
+            case ')':
+            case Tag.EOF:
+                break;
 
-        default:
-            error(ANSI_BOLD + "*" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "/" + ANSI_RESET_ERROR + " or " + ANSI_BOLD
-                    + "+" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "-" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + ")"
-                    + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR + " expected.");
+            default:
+                error(ANSI_BOLD + "*" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "/" + ANSI_RESET_ERROR + " or "
+                        + ANSI_BOLD + "+" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "-" + ANSI_RESET_ERROR + " or "
+                        + ANSI_BOLD + ")" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR
+                        + " expected.");
         }
     }
 
     private void fact() {
         switch (look.tag) {
-        case '(':
-            // GUIDA(F -> (E))
-            match('(');
-            expr();
-            match(')');
-            break;
+            case '(':
+                // GUIDA(F -> (E))
+                match('(');
+                expr();
+                match(')');
+                break;
 
-        case Tag.NUM:
-            // GUIDA(F -> a)
-            match(Tag.NUM);
-            break;
+            case Tag.NUM:
+                // GUIDA(F -> a)
+                match(Tag.NUM);
+                break;
 
-        default:
-            error(ANSI_BOLD + "(" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "Number" + ANSI_RESET_ERROR + " expected.");
+            default:
+                error(ANSI_BOLD + "(" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "Number" + ANSI_RESET_ERROR
+                        + " expected.");
         }
     }
 
     public static void main(String[] args) {
+        System.out.println(
+                "\n!! Se il testo su stdout non dovesse essere formattato correttamente,\n    si inizializzino tutti i colori ANSI, dichiarati all'inizio del file \"Parser.java\", con stringa vuota !!\n\n");
         Lexer lex = new Lexer();
-        String path = "./lexer.txt"; // il percorso del file da leggere
+        String path = "./parser.txt"; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Parser parser = new Parser(lex, br);
