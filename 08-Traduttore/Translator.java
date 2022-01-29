@@ -43,9 +43,9 @@ public class Translator {
     public void prog() {
         if (look.tag == Tag.ASSIGN || look.tag == Tag.PRINT || look.tag == Tag.READ || look.tag == Tag.WHILE
                 || look.tag == Tag.IF || look.tag == '{') {
-            int lnext_prog = code.newLabel();
+            int lnext_prog = code.newLabel(); // Label per il return finale (L0: )
             statlist(lnext_prog);
-            code.emitLabel(lnext_prog);
+            code.emitLabel(lnext_prog); // L0:
             match(Tag.EOF);
             try {
                 code.toJasmin();

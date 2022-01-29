@@ -37,6 +37,7 @@ public class Parser {
     }
 
     public void prog() {
+        // GUIDA(<prog> -> <statlist> EOF)
         if (look.tag == Tag.ASSIGN || look.tag == Tag.PRINT || look.tag == Tag.READ || look.tag == Tag.WHILE
                 || look.tag == Tag.IF || look.tag == '{') {
             statlist();
@@ -50,6 +51,7 @@ public class Parser {
     }
 
     public void statlist() {
+        // GUIDA(<statlist> -> <stat><statlistP>)
         if (look.tag == Tag.ASSIGN || look.tag == Tag.PRINT || look.tag == Tag.READ || look.tag == Tag.WHILE
                 || look.tag == Tag.IF || look.tag == '{') {
             stat();
@@ -64,145 +66,149 @@ public class Parser {
 
     public void statlistP() {
         switch (look.tag) {
-        case ';':
-            match(';');
-            stat();
-            statlistP();
-            break;
+            // GUIDA(<statlistP> -> ;<stat><statlistP>)
+            case ';':
+                match(';');
+                stat();
+                statlistP();
+                break;
 
-        case '}':
-        case Tag.EOF:
-            break;
+            // GUIDA(<statlistP> -> eps)
+            // FOLLOW(<statlistP>) = {'}', EOF}
+            case '}':
+            case Tag.EOF:
+                break;
 
-        default:
-            error("Error in statlistP() method. Expected " + ANSI_BOLD + ";" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "}"
-                    + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR);
+            default:
+                error("Error in statlistP() method. Expected " + ANSI_BOLD + ";" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
+                        + "}" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR);
         }
     }
 
     public void stat() {
         switch (look.tag) {
 
-        // assign Expr() to Idlist()
-        case Tag.ASSIGN:
-            match(Tag.ASSIGN);
-            expr();
-            if (look.tag == Tag.TO)
-                match(Tag.TO);
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "'to'" + ANSI_RESET_ERROR
-                        + " after expression!");
-            idlist();
-            break;
+            // GUIDA(<stat> -> assign <expr> to <idlist>)
+            case Tag.ASSIGN:
+                match(Tag.ASSIGN);
+                expr();
+                if (look.tag == Tag.TO)
+                    match(Tag.TO);
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "'to'" + ANSI_RESET_ERROR
+                            + " after expression!");
+                idlist();
+                break;
 
-        // print (Exprlist())
-        case Tag.PRINT:
-            match(Tag.PRINT);
-            if (look.tag == '(')
-                match('(');
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
-                        + " after print command!");
-            exprlist();
-            if (look.tag == ')')
-                match(')');
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
-                        + " after list expression!");
-            break;
+            // GUIDA(<stat> -> print(<exprlist>))
+            case Tag.PRINT:
+                match(Tag.PRINT);
+                if (look.tag == '(')
+                    match('(');
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
+                            + " after print command!");
+                exprlist();
+                if (look.tag == ')')
+                    match(')');
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
+                            + " after list expression!");
+                break;
 
-        // read (Idlist())
-        case Tag.READ:
-            match(Tag.READ);
-            if (look.tag == '(')
-                match('(');
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
-                        + " after read command!");
-            idlist();
-            if (look.tag == ')')
-                match(')');
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
-                        + " after list identifier!");
-            break;
+            // GUIDA(<stat> -> read(<idlist>))
+            case Tag.READ:
+                match(Tag.READ);
+                if (look.tag == '(')
+                    match('(');
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
+                            + " after read command!");
+                idlist();
+                if (look.tag == ')')
+                    match(')');
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
+                            + " after list identifier!");
+                break;
 
-        // while(Bexpr())Stat()
-        case Tag.WHILE:
-            match(Tag.WHILE);
-            if (look.tag == '(')
-                match('(');
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
-                        + " after while command!");
-            bexpr();
-            if (look.tag == ')')
-                match(')');
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
-                        + " after boolean expression!");
-            stat();
-            break;
+            // GUIDA(<stat> -> while(<bexpr>) <stat>)
+            case Tag.WHILE:
+                match(Tag.WHILE);
+                if (look.tag == '(')
+                    match('(');
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
+                            + " after while command!");
+                bexpr();
+                if (look.tag == ')')
+                    match(')');
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
+                            + " after boolean expression!");
+                stat();
+                break;
 
-        // if(Bexpr())Stat()StatP()
-        case Tag.IF:
-            match(Tag.IF);
-            if (look.tag == '(')
-                match('(');
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
-                        + " after if command!");
-            bexpr();
-            if (look.tag == ')')
-                match(')');
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
-                        + " after boolean expression!");
-            stat();
-            statp();
-            break;
+            // GUIDA(<stat> -> if(<bexpr>)<stat><statP>)
+            case Tag.IF:
+                match(Tag.IF);
+                if (look.tag == '(')
+                    match('(');
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
+                            + " after if command!");
+                bexpr();
+                if (look.tag == ')')
+                    match(')');
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
+                            + " after boolean expression!");
+                stat();
+                statp();
+                break;
 
-        // {Statlist()}
-        case '{':
-            match('{');
-            statlist();
-            if (look.tag == '}')
-                match('}');
-            else
-                error("Error in stat() method. Expected " + ANSI_BOLD + "'}'" + ANSI_RESET_ERROR
-                        + " after a list of statements!");
-            break;
+            // GUIDA(<stat> -> {<statlist>})
+            case '{':
+                match('{');
+                statlist();
+                if (look.tag == '}')
+                    match('}');
+                else
+                    error("Error in stat() method. Expected " + ANSI_BOLD + "'}'" + ANSI_RESET_ERROR
+                            + " after a list of statements!");
+                break;
 
-        default:
-            error("Error in stat() method. Expected " + ANSI_BOLD + "assign" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
-                    + "print" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "read" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
-                    + "while" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "if" + ANSI_RESET_ERROR + " or " + ANSI_BOLD
-                    + "'{'" + ANSI_RESET_ERROR);
+            default:
+                error("Error in stat() method. Expected " + ANSI_BOLD + "assign" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
+                        + "print" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "read" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
+                        + "while" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "if" + ANSI_RESET_ERROR + " or " + ANSI_BOLD
+                        + "'{'" + ANSI_RESET_ERROR);
         }
     }
 
     public void statp() {
         switch (look.tag) {
 
-        // else Stat() end
-        case Tag.ELSE:
-            match(Tag.ELSE);
-            stat();
-            if (look.tag == Tag.END)
-                match(Tag.END);
-            else
-                error("Error in statp() method. Expected " + ANSI_BOLD + "end" + ANSI_RESET_ERROR
-                        + " after a statement!");
-            break;
+            // GUIDA(<statP> -> else <stat> end)
+            case Tag.ELSE:
+                match(Tag.ELSE);
+                stat();
+                if (look.tag == Tag.END)
+                    match(Tag.END);
+                else
+                    error("Error in statp() method. Expected " + ANSI_BOLD + "end" + ANSI_RESET_ERROR
+                            + " after a statement!");
+                break;
 
-        // end
-        case Tag.END:
-            match(Tag.END);
-            break;
+            // GUIDA(<statP> -> end)
+            case Tag.END:
+                match(Tag.END);
+                break;
         }
     }
 
     public void idlist() {
+        // GUIDA(<idlist> -> ID <idlistP>)
         if (look.tag == Tag.ID) {
             match(Tag.ID);
             idlistP();
@@ -213,27 +219,32 @@ public class Parser {
 
     public void idlistP() {
         switch (look.tag) {
-        case ',':
-            match(',');
-            if (look.tag == Tag.ID)
-                match(Tag.ID);
-            else
-                error("Error in idlistP() method. Expected " + ANSI_BOLD + "ID" + ANSI_RESET_ERROR + " after ','!");
-            idlistP();
-            break;
+            // GUIDA(<idlistP> -> , ID <idlistP>)
+            case ',':
+                match(',');
+                if (look.tag == Tag.ID)
+                    match(Tag.ID);
+                else
+                    error("Error in idlistP() method. Expected " + ANSI_BOLD + "ID" + ANSI_RESET_ERROR + " after ','!");
+                idlistP();
+                break;
 
-        case ')':
-        case ';':
-        case Tag.EOF:
-            break;
+            // GUIDA(<idlistP> -> eps)
+            // FOLLOW(<idlistP>) = {')', ';', EOF}
+            case ')':
+            case ';':
+            case Tag.EOF:
+                break;
 
-        default:
-            error("Error in idlistP() method. Expected " + ANSI_BOLD + "','" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + ")"
-                    + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR);
+            default:
+                error("Error in idlistP() method. Expected " + ANSI_BOLD + "','" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
+                        + "';'" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + ")" + ANSI_RESET_ERROR + " or " + ANSI_BOLD
+                        + "EOF" + ANSI_RESET_ERROR);
         }
     }
 
     public void bexpr() {
+        // GUIDA(<bexpr> -> RELOP <expr> <expr>)
         if (look.tag == Tag.RELOP) {
             match(Tag.RELOP);
             expr();
@@ -245,62 +256,69 @@ public class Parser {
 
     public void expr() {
         switch (look.tag) {
-        case '+':
-            match('+');
-            if (look.tag == '(')
-                match('(');
-            else
-                error("Error in expr() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR + " after '+'!");
-            exprlist();
-            if (look.tag == ')')
-                match(')');
-            else
-                error("Error in expr() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
-                        + " after list expression!");
-            break;
+            // GUIDA(<expr> -> + ( <exprlist> ))
+            case '+':
+                match('+');
+                if (look.tag == '(')
+                    match('(');
+                else
+                    error("Error in expr() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR + " after '+'!");
+                exprlist();
+                if (look.tag == ')')
+                    match(')');
+                else
+                    error("Error in expr() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
+                            + " after list expression!");
+                break;
 
-        case '*':
-            match('*');
-            if (look.tag == '(')
-                match('(');
-            else
-                error("Error in expr() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR + " after '*'!");
-            exprlist();
-            if (look.tag == ')')
-                match(')');
-            else
-                error("Error in expr() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
-                        + " after list expression!");
-            break;
+            // GUIDA(<expr> -> * ( <exprlist> ))
+            case '*':
+                match('*');
+                if (look.tag == '(')
+                    match('(');
+                else
+                    error("Error in expr() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR + " after '*'!");
+                exprlist();
+                if (look.tag == ')')
+                    match(')');
+                else
+                    error("Error in expr() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
+                            + " after list expression!");
+                break;
 
-        case '-':
-            match('-');
-            expr();
-            expr();
-            break;
+            // GUIDA(<expr> -> - <expr> <expr>)
+            case '-':
+                match('-');
+                expr();
+                expr();
+                break;
 
-        case '/':
-            match('/');
-            expr();
-            expr();
-            break;
+            // GUIDA(<expr> -> / <expr> <expr>)
+            case '/':
+                match('/');
+                expr();
+                expr();
+                break;
 
-        case Tag.NUM:
-            match(Tag.NUM);
-            break;
+            // GUIDA(<expr> -> NUM)
+            case Tag.NUM:
+                match(Tag.NUM);
+                break;
 
-        case Tag.ID:
-            match(Tag.ID);
-            break;
+            // GUIDA(<expr> -> ID)
+            case Tag.ID:
+                match(Tag.ID);
+                break;
 
-        default:
-            error("Error in expr() method. Expected " + ANSI_BOLD + "+" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "-"
-                    + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "*" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "/"
-                    + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "NUM" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "ID");
+            default:
+                error("Error in expr() method. Expected " + ANSI_BOLD + "+" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "-"
+                        + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "*" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "/"
+                        + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "NUM" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "ID");
         }
     }
 
     public void exprlist() {
+        // GUIDA(<exprlist> -> <expr> <exprlistP>)
         if (look.tag == '+' || look.tag == '*' || look.tag == '-' || look.tag == '/' || look.tag == Tag.NUM
                 || look.tag == Tag.ID) {
             expr();
@@ -314,24 +332,29 @@ public class Parser {
 
     public void exprlistP() {
         switch (look.tag) {
-        case ',':
-            match(',');
-            expr();
-            exprlistP();
-            break;
+            // GUIDA(<exprlistP> -> , <expr> <exprlistP>)
+            case ',':
+                match(',');
+                expr();
+                exprlistP();
+                break;
 
-        case ')':
-            break;
+            // GUIDA(<exprlistP> -> eps)
+            // FOLLOW(<exprlistP>) = {')'}
+            case ')':
+                break;
 
-        default:
-            error("Error in exprlistP() method. Expected " + ANSI_BOLD + "','" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
-                    + ")");
+            default:
+                error("Error in exprlistP() method. Expected " + ANSI_BOLD + "','" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
+                        + ")");
         }
     }
 
     public static void main(String[] args) {
+        System.out.println(
+                "\n!! Se il testo su stdout non dovesse essere formattato correttamente,\n    si inizializzino tutti i colori ANSI, dichiarati all'inizio del file \"Parser.java\", con stringa vuota !!\n\n");
         Lexer lex = new Lexer();
-        String path = "./ParserTest.txt"; // il percorso del file da leggere
+        String path = "./parser.txt"; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Parser parser = new Parser(lex, br);
