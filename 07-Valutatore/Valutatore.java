@@ -160,7 +160,7 @@ public class Valutatore {
 
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "ValutatoreTest.lft"; // il percorso del file da leggere
+        String path = "./valutatore.lft"; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Valutatore valutatore = new Valutatore(lex, br);
