@@ -1,0 +1,13 @@
+read(count);
+assign 0 to prev;
+assign 1 to curr;
+assign 0 to next;
+print(curr);
+assign - count 1 to count;
+while(> count 0){
+    assign - count 1 to count;
+    assign +(prev, curr) to next;
+    assign curr to prev;
+    assign next to curr;
+    print(next)
+}

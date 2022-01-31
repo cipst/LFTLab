@@ -36,31 +36,33 @@
 L1:
  iload 0
  ldc 10
- if_icmplt L3
- goto L6
+ if_icmpge L6
+ goto L5
 L6:
  iload 0
  ldc 20
- if_icmpgt L7
- goto L4
-L7:
+ if_icmple L3
  iload 0
  ldc 30
- if_icmpgt L4
+ if_icmple L7
  goto L3
-L3:
+L7:
+ goto L5
+L5:
  iload 0
  ldc 100
  iadd 
  invokestatic Output/print(I)V
- goto L5
-L4:
+ goto L4
+L3:
  iload 0
  invokestatic Output/print(I)V
- goto L5
-L5:
+ goto L4
+L4:
  goto L2
 L2:
+ goto L8
+L8:
  goto L0
 L0:
  return
