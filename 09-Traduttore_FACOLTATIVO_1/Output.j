@@ -34,35 +34,78 @@
  istore 0
  goto L1
 L1:
- iload 0
- ldc 10
- if_icmplt L3
- goto L6
-L6:
- iload 0
- ldc 20
- if_icmpgt L7
- goto L4
-L7:
- iload 0
- ldc 30
- if_icmpgt L4
+ ldc 0
+ dup 
+ istore 1
+ pop 
+ goto L2
+L2:
+ ldc 1
+ dup 
+ istore 2
+ pop 
  goto L3
 L3:
- iload 0
- ldc 100
- iadd 
- invokestatic Output/print(I)V
- goto L5
+ ldc 0
+ dup 
+ istore 3
+ pop 
+ goto L4
 L4:
- iload 0
+ iload 2
  invokestatic Output/print(I)V
  goto L5
 L5:
- goto L2
-L2:
- goto L8
+ iload 0
+ ldc 1
+ isub 
+ dup 
+ istore 0
+ pop 
+ goto L6
+L6:
 L8:
+ iload 0
+ ldc 0
+ if_icmpgt L9
+ goto L10
+L9:
+ iload 0
+ ldc 1
+ isub 
+ dup 
+ istore 0
+ pop 
+ goto L11
+L11:
+ iload 1
+ iload 2
+ iadd 
+ dup 
+ istore 3
+ pop 
+ goto L12
+L12:
+ iload 2
+ dup 
+ istore 1
+ pop 
+ goto L13
+L13:
+ iload 3
+ dup 
+ istore 2
+ pop 
+ goto L14
+L14:
+ iload 3
+ invokestatic Output/print(I)V
+ goto L15
+L15:
+ goto L8
+L10:
+ goto L7
+L7:
  goto L0
 L0:
  return
