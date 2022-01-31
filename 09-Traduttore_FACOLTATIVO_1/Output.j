@@ -61,6 +61,8 @@ L4:
 L5:
  goto L2
 L2:
+ goto L8
+L8:
  goto L0
 L0:
  return

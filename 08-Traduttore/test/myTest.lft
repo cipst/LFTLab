@@ -1,0 +1,11 @@
+/* TEST MIO ESEMPIO */
+read(i, j);
+while(> i 0){
+    print(i);
+    assign j to k;
+    while(> k 0) {
+        print(k);
+    	assign - k 1 to k;
+    };
+    assign - i 1 to i;
+}

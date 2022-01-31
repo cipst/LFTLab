@@ -123,7 +123,7 @@ public class Translator {
                 else
                     error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
                             + " after print command!");
-                // code.emit(OpCode.invokestatic, 1);
+
                 exprlist(OpCode.invokestatic);
                 if (look.tag == ')')
                     match(')');
@@ -139,7 +139,7 @@ public class Translator {
                 else
                     error("Error in stat() method. Expected " + ANSI_BOLD + "'('" + ANSI_RESET_ERROR
                             + " after read command!");
-                // code.emit(OpCode.invokestatic, 0);
+
                 idlist(Tag.READ);
                 if (look.tag == ')')
                     match(')');
@@ -398,9 +398,12 @@ public class Translator {
         if (look.tag == '+' || look.tag == '*' || look.tag == '-' || look.tag == '/' || look.tag == Tag.NUM
                 || look.tag == Tag.ID) {
             expr();
+
+            // per sapere se <exprlist> è dentro ad una <print>
             if (opcode == OpCode.invokestatic) {
                 code.emit(OpCode.invokestatic, 1);
             }
+
             exprlistP(opcode);
         } else {
             error("Error in exprlist() method. Expected " + ANSI_BOLD + "+" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + "-"
@@ -433,8 +436,11 @@ public class Translator {
     }
 
     public static void main(String[] args) {
+        System.out.println("\n !! Inserire il percorso ad un file di test come argomento per testare quel file\n");
+
         Lexer lex = new Lexer();
-        String path = "TEST.lft";
+        String path = (args.length == 0) ? "./test/TESTS.lft" : args[0];
+
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Translator translator = new Translator(lex, br);

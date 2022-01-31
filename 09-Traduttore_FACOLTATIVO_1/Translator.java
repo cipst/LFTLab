@@ -465,8 +465,11 @@ public class Translator {
     }
 
     public static void main(String[] args) {
+        System.out.println("\n !! Inserire il percorso ad un file di test come argomento per testare quel file\n");
+
         Lexer lex = new Lexer();
-        String path = "TEST.lft";
+        String path = (args.length == 0) ? "./test/TESTS.lft" : args[0];
+
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Translator translator = new Translator(lex, br);
