@@ -79,9 +79,11 @@ public class Parser {
             case Tag.EOF:
                 break;
 
-            default:
-                error("Error in statlistP() method. Expected " + ANSI_BOLD + ";" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
-                        + "}" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR);
+            // NOTE
+            // default:
+            // error("Error in statlistP() method. Expected " + ANSI_BOLD + ";" +
+            // ANSI_RESET_ERROR + ", " + ANSI_BOLD
+            // + "}" + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR);
         }
     }
 
@@ -236,10 +238,13 @@ public class Parser {
             case Tag.EOF:
                 break;
 
-            default:
-                error("Error in idlistP() method. Expected " + ANSI_BOLD + "','" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
-                        + "';'" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + ")" + ANSI_RESET_ERROR + " or " + ANSI_BOLD
-                        + "EOF" + ANSI_RESET_ERROR);
+            // NOTE
+            // default:
+            // error("Error in idlistP() method. Expected " + ANSI_BOLD + "','" +
+            // ANSI_RESET_ERROR + ", " + ANSI_BOLD
+            // + "';'" + ANSI_RESET_ERROR + ", " + ANSI_BOLD + ")" + ANSI_RESET_ERROR + " or
+            // " + ANSI_BOLD
+            // + "EOF" + ANSI_RESET_ERROR);
         }
     }
 
@@ -344,9 +349,11 @@ public class Parser {
             case ')':
                 break;
 
-            default:
-                error("Error in exprlistP() method. Expected " + ANSI_BOLD + "','" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
-                        + ")");
+            // NOTE
+            // default:
+            // error("Error in exprlistP() method. Expected " + ANSI_BOLD + "','" +
+            // ANSI_RESET_ERROR + ", " + ANSI_BOLD
+            // + ")");
         }
     }
 

@@ -93,10 +93,12 @@ public class Translator {
                 code.emit(OpCode.GOto, slNext);
                 break;
 
-            default:
-                error("Error in statlistP() method. Expected " + ANSI_BOLD + ";" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
-                        + "}"
-                        + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR);
+            // NOTE
+            // default:
+            // error("Error in statlistP() method. Expected " + ANSI_BOLD + ";" +
+            // ANSI_RESET_ERROR + ", " + ANSI_BOLD
+            // + "}"
+            // + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR);
         }
     }
 
@@ -174,6 +176,7 @@ public class Translator {
 
                 break;
 
+            // NOTE
             // if(Bexpr())Stat()StatP()
             case Tag.IF:
                 match(Tag.IF);
@@ -184,7 +187,7 @@ public class Translator {
                             + " after if command!");
                 int iTrue = code.newLabel();
                 int iFalse = code.newLabel();
-                int iEnd = code.newLabel();
+                // int iEnd = code.newLabel();
                 bexpr(iTrue, iFalse);
                 if (look.tag == ')')
                     match(')');
@@ -192,11 +195,12 @@ public class Translator {
                     error("Error in stat() method. Expected " + ANSI_BOLD + "')'" + ANSI_RESET_ERROR
                             + " after boolean expression!");
                 code.emitLabel(iTrue);
-                stat(iEnd);
-                code.emit(OpCode.GOto, iEnd);
+                stat(sNext);
+                code.emit(OpCode.GOto, sNext);
+
                 code.emitLabel(iFalse);
-                statp(iEnd);
-                code.emitLabel(iEnd);
+                statp(sNext);
+                // code.emitLabel(iEnd);
                 break;
 
             // {Statlist()}
@@ -282,10 +286,12 @@ public class Translator {
             case Tag.EOF:
                 break;
 
-            default:
-                error("Error in idlistP() method. Expected " + ANSI_BOLD + "','" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
-                        + ")"
-                        + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR);
+            // NOTE
+            // default:
+            // error("Error in idlistP() method. Expected " + ANSI_BOLD + "','" +
+            // ANSI_RESET_ERROR + ", " + ANSI_BOLD
+            // + ")"
+            // + ANSI_RESET_ERROR + " or " + ANSI_BOLD + "EOF" + ANSI_RESET_ERROR);
         }
     }
 
@@ -458,9 +464,11 @@ public class Translator {
             case ')':
                 break;
 
-            default:
-                error("Error in exprlistP() method. Expected " + ANSI_BOLD + "','" + ANSI_RESET_ERROR + ", " + ANSI_BOLD
-                        + ")");
+            // NOTE
+            // default:
+            // error("Error in exprlistP() method. Expected " + ANSI_BOLD + "','" +
+            // ANSI_RESET_ERROR + ", " + ANSI_BOLD
+            // + ")");
         }
     }
 

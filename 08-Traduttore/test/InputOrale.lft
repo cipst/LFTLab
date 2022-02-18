@@ -1,0 +1,11 @@
+/*input***/
+read(____);
+print(___);
+read(A1,_2b);/*commento****/ 
+while (<> A1 _2b)
+    if (> A1 _2b)
+        assign - A1 _2b to A1
+    else
+        assign - _2b A1 to _2b
+    end;
+print(A1, *(_2b, A1, 1000), 10) //commentino
